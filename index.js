@@ -73,5 +73,38 @@ var zoo = {
       currentScope.visit();
       currentScope.view(currentScope);
     });
+  },
+
+  animId: function(input_scope) {
+    var currentScope = input_scope;
+    console.log('Enter ID of the animal you want to visit');
+    prompt.get(['->', 'animal_id'], function(err, result) {
+      connection.query(); // get the data for the particular animal of that id that the user typed in
+      currentScope.visit();
+      currentScope.view(currentScope);
+    });
+  },
+
+  name: function(input_scope) {
+    var currentScope = input_scope;
+    console.log('Enter name of the animal you want to visit');
+    prompt.get(['->', 'animal_name'], function(err, result) {
+      connection.query(); // get the data for the particular animal of that name that the user typed in
+      currentScope.visit();
+      currentScope.view(currentScope);
+    });
+  },
+
+  all: function(input_scope) {
+    connection.query();//get total animals
+  },
+
+  update: function(input_scope) {
+    var currentScope = input_scope;
+    prompt.get(['--->', 'id', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], function(err, result) {
+      connection.query(); //update that particular animal with the input the user provided
+      currentScope.menu();
+      currentScope.promptUser();
+    });
   }
 }
