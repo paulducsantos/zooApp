@@ -155,13 +155,39 @@ var zoo = {
     });//get total animals
   },
 
-  update: function(input_scope) {
+  preUpdate: function(input_scope) {
     var currentScope = input_scope;
-    prompt.get(['--->', 'id', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], function(err, result) {
-      connection.query(); //update that particular animal with the input the user provided
-      currentScope.menu();
-      currentScope.promptUser();
+    console.log('Update by ID or name?');
+    var userChoice;
+    prompt.get(['IdOrName'], function(err, result) {
+      userChoice = result.IdOrName;
+      currentScope.update(currentScope, userChoice);
     });
+  },
+
+  update: function(input_scope, IdOrName) {
+    var currentScope = input_scope;
+    if(IdOrName == 'name') {
+      prompt.get(['--->', 'old_name', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], function(err, result) {
+        var update_animal = {name: result.new_name, age: result.new_age, type: result.new_type, caretaker_id: result.new_caretaker_id};
+        var query = connection.query('UPDATE animals SET ? WHERE name = ?', [update_animal, result.old_name], function(err, results) {
+          if (err) throw err;
+        }); //update that particular animal with the input the user provided
+        console.log(query.sql);
+        currentScope.menu();
+        currentScope.promptUser();
+      });
+    } else {
+      prompt.get(['--->', 'animal_id', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], function(err, result) {
+        var update_animal = {name: result.new_name, age: result.new_age, type: result.new_type, caretaker_id: result.new_caretaker_id};
+        var query = connection.query('UPDATE animals SET ? WHERE id = ?', [update_animal, result.animal_id], function(err, results) {
+          if (err) throw err;
+        }); //update that particular animal with the input the user provided
+        console.log(query.sql);
+        currentScope.menu();
+        currentScope.promptUser();
+      });
+    }
   },
 
   adopt: function(input_scope) {
@@ -187,7 +213,7 @@ var zoo = {
       } else if (result.input == 'D') {
         self.adopt(self);
       } else if (result.input == 'U') {
-        self.update(self);
+        self.preUpdate(self);
       } else {
         console.log('Sorry didn\'t get that, come again?');
       }
