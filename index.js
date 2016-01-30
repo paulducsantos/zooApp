@@ -193,7 +193,9 @@ var zoo = {
   adopt: function(input_scope) {
     var currentScope = input_scope;
     prompt.get(['->', 'animal_id'], function(err, result) {
-      connection.query(); //update that particular animal with the input the user provided
+      connection.query('DELETE FROM animals WHERE id = ?', result.animal_id, function(err, results, fields) {
+        if (err) throw err;
+      }); //update that particular animal with the input the user provided
       currentScope.menu();
       currentScope.promptUser();
     });
