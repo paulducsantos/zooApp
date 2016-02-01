@@ -56,41 +56,40 @@ var zoo = {
     // currentScope.view();
   },
 
-  view: function(input_scope) {
-    var currentScope = input_scope;
+  view: function() {
+    // var currentScope = input_scope;
     console.log('Please choose what you like to visit!');
-    prompt.get(['->', 'visit'], function(err, result) {
+    prompt.get(['->', 'visit'], (err, result) => {
       if (result.visit == 'Q') {
-        currentScope.menu();
+        this.menu();
       } else if (result.visit == 'O') {
-        currentScope.type(input_scope);
+        this.type();
       } else if (result.visit =='I') {
-        currentScope.animId(input_scope);
+        this.animId();
       } else if (result.visit == 'N') {
-        currentScope.name(input_scope);
+        this.name();
       } else if (result.visit == 'A') {
-        currentScope.all(input_scope);
+        this.all();
       } else if (result.visit == 'C') {
-        currentScope.care(input_scope);
+        this.care();
       } else {
         console.log('Sorry didn\'t get that, come again?');
-        currentScope.visit();
-        currentScope.view(currentScope);
+        this.visit();
+        this.view();
       }
     });
   },
 
-  type: function(input_scope) {
-    var currentScope = input_scope;
+  type: function() {
+    // var currentScope = input_scope;
     console.log('Enter animal type to find out how many animals we have of that type');
-    prompt.get(['->', 'animal_type'], function(err, result) {
+    prompt.get(['->', 'animal_type'], (err, result) => {
       connection.query('SELECT COUNT(*) AS total FROM `animals` WHERE `type` = ?', [result.animal_type], function(err, results, fields) {
         if (err) throw err;
-       
         console.log('Total animals of that type: ' + results[0].total);
       });
-      currentScope.menu();
-      currentScope.promptUser();
+      this.menu();
+      this.promptUser();
     });
   },
 
@@ -100,7 +99,6 @@ var zoo = {
     prompt.get(['->', 'city_name'], function(err, result) {
       connection.query('SELECT COUNT(*) AS total FROM animals, caretakers WHERE animals.caretaker_id = caretakers.id AND caretakers.city = ?', [result.city_name], function(err, results, fields) {
         if (err) throw err;
-       
         console.log('Total animals in that location: ' + results[0].total);
       });
       currentScope.visit();
@@ -108,29 +106,29 @@ var zoo = {
     });
   },
 
-  animId: function(input_scope) {
-    var currentScope = input_scope;
+  animId: function() {
+    // var currentScope = input_scope;
     console.log('Enter ID of the animal you want to visit');
-    prompt.get(['->', 'animal_id'], function(err, result) {
+    prompt.get(['->', 'animal_id'], (err, result) => {
       connection.query('SELECT * FROM animals WHERE id = ?', [result.animal_id], function(err, results, fields) {
         if (err) throw err;
         else {
           console.log('Animal ID: ' + results[0].id);
-        console.log('Caretaker ID: ' + results[0].caretaker_id);
-        console.log('Name: ' + results[0].name);
-        console.log('Animal Type: ' + results[0].type);
-        console.log('Age: ' + results[0].age);
+          console.log('Caretaker ID: ' + results[0].caretaker_id);
+          console.log('Name: ' + results[0].name);
+          console.log('Animal Type: ' + results[0].type);
+          console.log('Age: ' + results[0].age);
         }
       });
-      currentScope.visit();
-      currentScope.view(currentScope);
+      this.visit();
+      this.view();
     });
   },
 
-  name: function(input_scope) {
-    var currentScope = input_scope;
+  name: function() {
+    // var currentScope = input_scope;
     console.log('Enter name of the animal you want to visit');
-    prompt.get(['->', 'animal_name'], function(err, result) {
+    prompt.get(['->', 'animal_name'], (err, result) => {
       connection.query('SELECT * FROM animals WHERE name = ?', [result.animal_name], function(err, results, fields) {
         if (err) throw err;
         else {
@@ -141,12 +139,12 @@ var zoo = {
           console.log('Age: ' + results[0].age);
         }
       }); // get the data for the particular animal of that name that the user typed in
-      currentScope.visit();
-      currentScope.view(currentScope);
+      this.visit();
+      this.view();
     });
   },
 
-  all: function(input_scope) {
+  all: function() {
     connection.query('SELECT COUNT(*) AS total FROM animals', function(err, results, fields) {
       if (err) throw err;
       else {
@@ -155,67 +153,65 @@ var zoo = {
     });//get total animals
   },
 
-  preUpdate: function(input_scope) {
-    var currentScope = input_scope;
+  preUpdate: function() {
+    // var currentScope = input_scope;
     console.log('Update by ID or name?');
     var userChoice;
-    prompt.get(['IdOrName'], function(err, result) {
+    prompt.get(['IdOrName'], (err, result) => {
       userChoice = result.IdOrName;
-      currentScope.update(currentScope, userChoice);
+      this.update(userChoice);
     });
   },
 
-  update: function(input_scope, IdOrName) {
-    var currentScope = input_scope;
+  update: function(IdOrName) {
+    // var currentScope = input_scope;
     if(IdOrName == 'name') {
-      prompt.get(['--->', 'old_name', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], function(err, result) {
+      prompt.get(['--->', 'old_name', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], (err, result) => {
         var update_animal = {name: result.new_name, age: result.new_age, type: result.new_type, caretaker_id: result.new_caretaker_id};
         var query = connection.query('UPDATE animals SET ? WHERE name = ?', [update_animal, result.old_name], function(err, results) {
           if (err) throw err;
         }); //update that particular animal with the input the user provided
         console.log(query.sql);
-        currentScope.menu();
-        currentScope.promptUser();
+        this.menu();
+        this.promptUser();
       });
     } else {
-      prompt.get(['--->', 'animal_id', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], function(err, result) {
+      prompt.get(['--->', 'animal_id', 'new_name', 'new_age', 'new_type', 'new_caretaker_id'], (err, result) => {
         var update_animal = {name: result.new_name, age: result.new_age, type: result.new_type, caretaker_id: result.new_caretaker_id};
         var query = connection.query('UPDATE animals SET ? WHERE id = ?', [update_animal, result.animal_id], function(err, results) {
           if (err) throw err;
         }); //update that particular animal with the input the user provided
         console.log(query.sql);
-        currentScope.menu();
-        currentScope.promptUser();
+        this.menu();
+        this.promptUser();
       });
     }
   },
 
-  adopt: function(input_scope) {
-    var currentScope = input_scope;
-    prompt.get(['->', 'animal_id'], function(err, result) {
+  adopt: function() {
+    prompt.get(['->', 'animal_id'], (err, result) => {
       connection.query('DELETE FROM animals WHERE id = ?', result.animal_id, function(err, results, fields) {
         if (err) throw err;
       }); //update that particular animal with the input the user provided
-      currentScope.menu();
-      currentScope.promptUser();
+      this.menu();
+      this.promptUser();
     });
   },
 
   promptUser: function() {
-    var self = this;
-    prompt.get(['input'], function(err, result) {
+    prompt.get(['input'], (err, result) => {
       console.log(result);
       if (result.input == 'Q') {
-        self.exit();
+        this.exit();
       } else if (result.input == 'A') {
-        self.add(self);
+        this.add();
       } else if (result.input =='V') {
-        self.visit();
-        self.view(self);
+        this.visit();
+        this.view();
       } else if (result.input == 'D') {
-        self.adopt(self);
+        this.adopt();
       } else if (result.input == 'U') {
-        self.preUpdate(self);
+        this.preUpdate();
       } else {
         console.log('Sorry didn\'t get that, come again?');
       }
